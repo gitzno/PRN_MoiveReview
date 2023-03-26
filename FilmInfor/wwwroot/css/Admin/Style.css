@@ -1,0 +1,38 @@
+﻿:root {
+    /*dark_mode*/
+    --color-dark-1: #283149;
+    --color-dark-2: #404B69;
+    --color-dark-3: #00818A;
+    --color-dark-4: #DBEDF3;
+    --bg-color-dark: linear-gradient(to right top, #283149, #2e3751, #343e59, #3a4461, #404b69);
+    /*light_mode*/
+    --color-light-1: #BB1542;
+    --color-light-2: #EB5F5D;
+    --color-light-3: #FABC74;
+    --color-light-4: #239F95;
+    --bg-color-light: background-image: linear-gradient(to right top, #fabc74, #c5bc68, #8fb670, #5aad82, #239f95);
+}
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+        
+    }
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+    background-image: linear-gradient(to right top, #fabc74, #c5bc68, #8fb670, #5aad82, #239f95);
+}
+
+.Login-component{
+
+}

@@ -1,0 +1,39 @@
+﻿@model List<Movie>
+
+@{
+    ViewData["Title"] = "Dashboard Movie";
+    Layout = "~/Views/Admin/Shared/_LayoutAdmin.cshtml";
+}
+<div class="Dashboard container">
+    <div class="row">
+    <h1>Dashboard Movie</h1>
+        
+        <table class="table table-bordered col-lg-12">
+            <tr>
+                <th>MovieId</th>
+                <th>Title</th>
+                <th>Year</th>
+                <th>Image</th>
+                <th>Description</th>
+                <th>GenreId</th>
+                <th></th>
+            </tr>
+            @foreach(var item in Model)
+            {
+                <tr>
+                    <td>@item.MovieId</td>
+                    <td>@item.Title</td>
+                    <td>@item.Year</td>
+                    <td><a href="https://www.w3schools.com/">@item.Image</a></td>
+                    <td>@item.Description</td>
+                    <td>@item.GenreId</td>
+                    <td>
+                        <button onclick="location.href='@Url.Action("UpdateMovie", "Admin", item)'" type="button" class="btn btn-primary">Edit</button>
+                        <button onclick="location.href='@Url.Action("RemoveMovie", "Admin", item)'" type="button" class="btn btn-danger">Delete</button>
+                    </td>
+                </tr>
+            }
+        </table>
+        <button onclick="location.href='@Url.Action("FormMovie", "Admin")'" type="button" class="btn btn-primary">Create Movie</button>
+    </div>
+</div>

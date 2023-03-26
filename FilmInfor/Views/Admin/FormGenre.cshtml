@@ -1,0 +1,23 @@
+﻿
+@{
+    ViewData["Title"] = "Dashboard Movie";
+    Layout = "~/Views/Admin/Shared/_LayoutAdmin.cshtml";
+}
+<div class="Dashboard container">
+    <div class="row">
+        @using (Html.BeginForm("AddGenre", "Admin", FormMethod.Post))
+        {
+            <div class="mb-3">
+                <label for="Description" class="form-label">Description</label>
+                <input class="form-control" type="text" name="Description" id="Title" placeholder="Title" />
+            </div>
+            
+            
+            <div>
+                <input type="submit" class="btn btn-primary" value="Save" />
+                <button onclick="location.href='@Url.Action("DashboardGenre", "Admin")'" type="button" class="btn btn-danger">Cancel</button>
+            </div>
+        }
+
+    </div>
+</div>

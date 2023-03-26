@@ -1,0 +1,145 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    var genres = ViewBag.genres;
+    var movies = ViewBag.movies;
+    var fullSize = ViewBag.fullSize;
+}
+
+<div class="container">
+    <div class="d-flex">        
+        <div class="col-md-4">
+            <h2>Thể loại</h2>
+            <ul>
+                @foreach (Genre genre in genres)
+                {
+                    <li><a href="" onclick="event.preventDefault(); myFilter(@genre.GenreId)">@genre.Description</a></li>
+                }
+            </ul>
+            <input id="genreid" type="hidden" value=""/>
+        </div>
+        <div id="list-movie" class="col-md-8 d-flex justify-content-start flex-wrap" style="margin-top:-10px; margin-left:-15px;">
+            @foreach (Movie movie in movies)
+            {
+                dynamic sum = 0.0;
+                var count = 0;
+                @foreach (Rate rate in movie.Rates)
+                {
+                    if (rate.NumericRating != null)
+                    {
+                        sum += (double)rate.NumericRating;
+                        count++;
+                    }                    
+                }
+                if (count != 0)
+                {
+                    sum /= count;                    
+                } else
+                {
+                    sum = "";
+                }
+                <div class="card" style="width: 195px; margin-top: 10px;margin-left:15px">
+                    <a asp-action="Detail" asp-route-id="@movie.MovieId"><img class="card-img-top" style="height:10rem;" src="@(string.IsNullOrEmpty(movie.Image)?"./Img/No_Image_Available.jpg":movie.Image)" alt="Card" /></a>
+                    <div class="card-body">
+                        <a asp-action="Detail" asp-route-id="@movie.MovieId" class="text-decoration-none"><h5 class="card-title">@movie.Title</h5></a>
+                        <p class="card-text">Năm: @movie.Year</p>
+                        <p class="card-text">Loại: @movie.Genre.Description</p>
+                        <p class="card-text">Điểm: @sum</p>
+                        <div class="d-flex justify-content-center">
+                            @if (Context.Session.GetString("account") != null)
+                            {
+                                <a asp-action="Detail" asp-route-id="@movie.MovieId" class="btn btn-primary">Đánh giá</a>
+                            }else
+                            {
+                                <a asp-controller="Home" asp-action="login" class="btn btn-primary">Đánh giá</a>
+                            }
+                            
+                        </div>
+                    </div>
+                </div>                            
+            }            
+        </div>        
+    </div>
+    <div id="load-btn" class="w-100 d-flex m-4">        
+        <div class="col-md-5">            
+        </div>
+        <div class="col-md-7 d-flex justify-content-center">
+            <button onclick="loadMore()" class="btn btn-primary">Tải thêm</button>
+        </div>
+    </div>
+</div>
+
+<script>    
+    var listMovie = document.querySelector('#list-movie');
+    var loadBtn = document.querySelector('#load-btn');
+    var size = @movies.Count;
+    var fullSize = @fullSize;
+    function searching(value) {  
+        var genreid = document.querySelector('#genreid').value;
+        var searchAjax = $.ajax({
+            url: '/Home/Search',
+            dataType: "json",
+            type: "GET",
+            contentType: 'application/json; charset=utf-8',
+            data: {
+                value: value,
+                genreid: genreid
+            }                    
+        });
+        searchAjax.done(resp=> {
+            listMovie.innerHTML = resp.html; 
+            loadBtn.classList.remove('d-none');
+            size = resp.size;
+            fullSize = resp.fullSize;
+            if (size == fullSize) {
+                loadBtn.classList.add('d-none');
+            }
+        });        
+    }
+    
+    function loadMore() {
+        var svalue = document.querySelector('#search').value;        
+        var genreid = document.querySelector('#genreid').value;
+        var loadAjax = $.ajax({
+            url: '/Home/LoadMore',
+            dataType: "json",
+            type: "GET",
+            contentType: 'application/json; charset=utf-8',
+            data: {
+                size: size,
+                svalue: svalue,
+                genreid: genreid
+            }
+        });
+        loadAjax.done(resp=> {
+            listMovie.insertAdjacentHTML('beforeend', resp.html);
+            size += resp.size;
+            if (size == fullSize) {
+                loadBtn.classList.add('d-none');                
+            }            
+        });        
+    }
+
+    function myFilter(x) {  
+        document.querySelector('#genreid').value = x;
+        var searchVal = document.querySelector('#search').value;
+        var filterAjax = $.ajax({
+            url: '/Home/Filter',
+            dataType: "json",
+            type: "GET",
+            contentType: 'application/json; charset=utf-8',
+            data: {                
+                genreid: x,
+                searchVal: searchVal
+            }
+        });
+        filterAjax.done(resp => {                
+            listMovie.innerHTML = resp.html;
+            loadBtn.classList.remove('d-none');
+            size = resp.size;
+            fullSize = resp.fullSize;
+            if (size == fullSize) {
+                loadBtn.classList.add('d-none');
+            }
+        });
+    }
+</script>

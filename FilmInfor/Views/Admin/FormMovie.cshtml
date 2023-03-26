@@ -1,0 +1,48 @@
+﻿@model List<Genre>
+@{
+    ViewData["Title"] = "Dashboard Movie";
+    Layout = "~/Views/Admin/Shared/_LayoutAdmin.cshtml";
+}
+<div class="Dashboard container">
+    <div class="row">
+        <h1>Dashboard Movie</h1>
+        @using (Html.BeginForm("AddMovie", "Admin", FormMethod.Post))
+        {
+            <div class="mb-3">
+                <label for="Title" class="form-label">Title</label>
+                <input value="@ViewBag.Movie.Title" class="form-control" type="text" name="Title" id="Title" placeholder="Title" />
+            </div>
+            <div class="mb-3">
+                <label for="Year" class="form-label">Year</label>
+                <input value="@ViewBag.Movie.Year" class="form-control" type="text" name="Year" id="Year" placeholder="Year" />
+            </div>
+
+            <div class="mb-3">
+                <label for="Image" class="form-label">Image</label>
+                <input value="@ViewBag.Movie.Image" class="form-control" type="text" name="Image" id="Image" placeholder="Image" />
+            </div>
+            <div class="mb-3">
+                <label for="Description" class="form-label">Description</label>
+                <textarea name="Description" class="form-control" placeholder="Leave a description here" id="Description" style="height: 100px">@ViewBag.Movie.Description</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="GenreId" class="form-label">GenreId</label>
+                <select id="GenreId" class="form-select" name="GenreId">
+                    @foreach (var item in Model)
+                    {
+                        @if (@item.GenreId == @ViewBag.Movie.GenreId){
+                            <option selected value="@item.GenreId">@item.Description</option>
+                        }
+                        <option value="@item.GenreId">@item.Description</option>
+                    }
+                </select>
+            </div>
+            <div>
+                <input type="submit" class="btn btn-primary" value="Save" />
+                <button onclick="location.href='@Url.Action("DashboardMovie", "Admin")'" type="button" class="btn btn-danger">Cancel</button>
+            </div>
+        }
+        
+    </div>
+</div>

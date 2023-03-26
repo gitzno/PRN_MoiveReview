@@ -1,0 +1,125 @@
+﻿@using System.Text.Json;
+@model FilmInfor.Models.Rate
+
+@{
+	ViewData["Title"] = "Detail";
+	Movie movie = ViewBag.movie;
+	var cmt = ViewBag.cmt;
+	dynamic score = 0.0;
+	var count = 0;
+	foreach (Rate item in movie.Rates)
+	{
+		score += (double)item.NumericRating;
+		count++;
+	}
+	if (count != 0)
+	{
+		score /= count;
+	}
+	else
+	{
+		score = "";
+	}
+	var commented = false;
+}
+
+<div class="container">
+	<div class="d-flex">
+		<div class="col-md-5">
+			<img class="img-fluid" src="@(string.IsNullOrEmpty(movie.Image ) ? "../Img/No_Image_Available.jpg" : movie.Image)" style="width:100%" />
+		</div>
+		<div class="col-md-7" style="padding-left: 20px;">
+			<div style="margin-bottom: 40px">
+				<h1>@movie.Title</h1>
+				<p><strong>Thể loại: </strong>@movie.Genre.Description</p>
+				<p><strong>Điểm đánh giá: </strong>@score</p>
+				<p><strong>Mô tả: </strong>@movie.Description</p>
+				@if (Context.Session.GetString("account") != null)
+				{
+					var ps = (Person)JsonSerializer.Deserialize<Person>(Context.Session.GetString("account"));
+					@foreach (Rate r in movie.Rates)
+					{
+						if (r.PersonId == ps.PersonId)
+						{
+							commented = true;
+						}
+					}
+					if (!commented)
+					{
+						<div id="commentForm" class="">
+							<h3>Chi tiết đánh giá</h3>
+							<form class="" asp-action="Comment" method="post">
+								<div class="d-none">
+									<input name="pid" value="@ps.PersonId" />
+								</div>
+								<div class="d-none">
+									<input type="text" name="moveId" value="@movie.MovieId" />
+								</div>
+								<div>
+									<label>Điểm đánh giá</label>
+									<input type="text" name="score" required />
+								</div>
+								<label for="binhluan">Bình luận</label><br>
+								<textarea class="w-100 h-40" id="comment" name="comment" asp-for="Comment" required></textarea>
+								<input type="submit" value="ĐÁNH GIÁ" />
+							</form>
+						</div>
+					}
+					else
+					{
+						<div id="commentedForm" class="d-none">
+							<h3>Chi tiết đánh giá</h3>
+							<form class="" asp-action="Edit" method="post">
+								<div class="d-none">
+									<input name="pid" value="@ps.PersonId" />
+								</div>
+								<div class="d-none">
+									<input type="text" name="moveId" value="@movie.MovieId" />
+								</div>
+								<div>
+									<label>Điểm đánh giá</label>
+									<input type="text" name="score" value="@movie.Rates.SingleOrDefault(m => m.Person.PersonId==ps.PersonId).NumericRating" required />
+								</div>
+								<label for="binhluan">Bình luận</label><br>
+								<textarea class="w-100 h-40" id="comment" name="comment" required>@movie.Rates.SingleOrDefault(m => m.Person.PersonId==ps.PersonId).Comment</textarea>
+								<input type="submit" value="ĐÁNH GIÁ" />
+							</form>
+						</div>
+					}
+
+				}
+				else
+				{
+					<a asp-controller="Home" asp-action="login" class="btn btn-primary">Đánh giá</a>
+				}
+			</div>
+			<hr />
+			<div>
+				<h3>Bình luận:</h3>
+				@foreach (Rate rate in cmt)
+				{
+					@if (Context.Session.GetString("account") != null)
+					{
+						var ps = (Person)JsonSerializer.Deserialize<Person>(Context.Session.GetString("account"));
+						if (ps.PersonId == rate.PersonId)
+						{
+							<p><strong>@rate.Person.Fullname: </strong>@rate.Comment</p>
+							<div class="btn btn-primary" id="editbtn">Edit</div>
+						}
+						else
+						{
+							<p><strong>@rate.Person.Fullname: </strong>@rate.Comment</p>
+						}
+
+					}
+				}
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	$('#editbtn').click(function (event) {
+		$('#commentedForm').removeClass('d-none');
+	});
+</script>

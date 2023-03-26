@@ -1,0 +1,36 @@
+﻿@model List<Person>
+
+@{
+    ViewData["Title"] = "Dashboard Movie";
+    Layout = "~/Views/Admin/Shared/_LayoutAdmin.cshtml";
+}
+<div class="Dashboard container">
+    <div class="row">
+        <h1>Dashboard Person</h1>
+ 
+        <table class="table table-bordered col-lg-12">
+            <tr>
+                <th>PersonId</th>
+                <th>Fullname</th>
+                <th>Gender</th>
+                <th>Email</th>
+                <th>Password</th>
+                <th>Type</th>
+                <th>IsActive</th>
+            </tr>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.PersonId</td>
+                    <td>@item.Fullname</td>
+                    <td>@item.Gender</td>
+                    <td>@item.Email</td>
+                    <td>@item.Password</td>
+                    <td>@item.Type</td>
+                    <td>@(item.IsActive == true ? "Active" : "Deactivated")</td>
+                </tr>
+            }
+        </table>
+        <button onclick="location.href='@Url.Action("FormPerson", "Admin")'" type="button" class="btn btn-primary">Create Person</button>
+    </div>
+</div>
